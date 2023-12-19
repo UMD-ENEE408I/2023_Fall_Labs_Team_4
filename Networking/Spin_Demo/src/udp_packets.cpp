@@ -15,6 +15,7 @@ const int RECEIVE_PACKET_LEN = TIME_FORMAT_LEN + FLOAT_FORMAT_LEN*3 + STATE_LEN 
 
 Serialization_Result deserialize_receive_packet(Receive_Packet& receive_packet, const char* buf) {
     int assignments = sscanf(buf, "%u, %d", &receive_packet.timestamp, &receive_packet.next_state);
+    
     receive_packet.valid = assignments < RECEIVE_PACKET_FIELDS;
     receive_packet.stale = false;
 

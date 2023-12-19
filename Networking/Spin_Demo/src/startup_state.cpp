@@ -6,8 +6,8 @@ Startup_State& Startup_State::instance() {
 }
 
 void Startup_State::entry_behavior(const Input& input, Output& output) {
-    output.screen.clearDisplay();
-    output.screen.drawString(0, 6, "State: Startup");
+    //output.screen.clearDisplay();
+    //output.screen.drawString(0, 6, "State: Startup");
 }
 void Startup_State::do_behavior(const Input& input, Output& output) {
     // do nothing

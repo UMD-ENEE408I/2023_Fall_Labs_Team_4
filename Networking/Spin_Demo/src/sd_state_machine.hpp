@@ -18,6 +18,9 @@
 #define REST_STATE_CODE 1
 #define STOP_STATE_CODE 2
 #define SPIN_STATE_CODE 3
+#define WALK_STATE_CODE 4
+#define WANDER_STATE_CODE 5
+#define FETCH_STATE_CODE 6
 
 #define STOP_STATE_LEN_MILLIS 200
 #define SPIN_ROTATION_TOLERANCE 2
@@ -62,6 +65,7 @@ class Startup_State : public Abstract_State<Input, Output> {
 };
 
 class Rest_State : public Abstract_State<Input, Output> {
+    unsigned long entry_time;
     public:
         static Rest_State& instance();
         
@@ -93,6 +97,7 @@ class Stop_State : public Abstract_State<Input, Output> {
 class Spin_State : public Abstract_State<Input, Output> {
     private:
         float rotation;
+        float w_z_bias;
         float integral_error;
         long prev_timestamp;
     public:
@@ -104,7 +109,26 @@ class Spin_State : public Abstract_State<Input, Output> {
 
     private:
         Spin_State()
-        : Abstract_State("Startup", SPIN_STATE_CODE) {}
+        : Abstract_State("Spin", SPIN_STATE_CODE) {}
 };
+
+class Walk_State : public Abstract_State<Input, Output> {
+    private:
+       bool bonk_flag;
+       float pitch;
+       long prev_timestamp;
+       float w_y_bias;
+    public:
+        static Walk_State& instance();
+
+        void entry_behavior(const Input& input, Output& output) override;
+        void do_behavior(const Input& input, Output& output) override;
+        Abstract_State<Input, Output>& get_next_state(const Input& input) override;
+
+    private:
+        Walk_State()
+        : Abstract_State("Walk", WALK_STATE_CODE) {}
+};
+
 
 #endif
