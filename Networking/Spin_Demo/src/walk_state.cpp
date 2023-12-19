@@ -14,10 +14,10 @@ Abstract_State<Input, Output>& Walk_State::get_next_state(const Input& input) {
         return Stop_State::instance(); // stop if commanded to
     }
     else if(this->bonk_flag) {
-        return Stop_State::instance(); // stop if finished
+        return Stop_State::instance(); // stop if bonk
     }
     else {
-        return Walk_State::instance(); // continue spinning if not done
+        return Walk_State::instance(); // continue if not done
     }
 }
 

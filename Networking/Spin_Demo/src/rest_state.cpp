@@ -12,6 +12,9 @@ Abstract_State<Input, Output>& Rest_State::get_next_state(const Input& input) {
     else if (input.receive_packet.next_state == WALK_STATE_CODE && ((input.gyro.timestamp - this->entry_time) > 1300)) {
         return Walk_State::instance();
     }
+    else if (input.receive_packet.next_state == WANDER_STATE_CODE) {
+        return Wander_State::instance();
+    }
     else {
         return Rest_State::instance();
     }

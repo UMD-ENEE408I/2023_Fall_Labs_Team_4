@@ -9,7 +9,10 @@ Stop_State& Stop_State::instance() {
  * Remain in stop state for the set duration and then transition to rest
 */
 Abstract_State<Input, Output>& Stop_State::get_next_state(const Input& input) {
-    if((input.gyro.timestamp - this->entry_time >= STOP_STATE_LEN_MILLIS)) {
+    if((input.gyro.timestamp - this->entry_time >= STOP_STATE_LEN_MILLIS) && input.receive_packet.next_state == WANDER_STATE_CODE) {
+        return Backup_State::instance();
+    }
+    else if((input.gyro.timestamp - this->entry_time >= STOP_STATE_LEN_MILLIS)) {
         return Rest_State::instance();
     }
     else {
