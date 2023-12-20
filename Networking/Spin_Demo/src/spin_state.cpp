@@ -22,11 +22,12 @@ Abstract_State<Input, Output>& Spin_State::get_next_state(const Input& input) {
 }
 
 void Spin_State::entry_behavior(const Input& input, Output& output) {
-    output.screen.clearDisplay();
-    output.screen.drawString(0, 6, "State: Spin");
-
+    //output.screen.clearDisplay();
+    //output.screen.drawString(0, 6, "State: Spin");
+    float init_time = input.gyro.timestamp;
     // reset the integral
     this->rotation = 0; 
+    this->w_z_bias = input.gyro.gyro.z;
     this->integral_error = 0;
     // update the initial timestamp to not have a massive timestep at the beginning
     this->prev_timestamp = input.gyro.timestamp; 
@@ -39,17 +40,17 @@ void Spin_State::do_behavior(const Input& input, Output& output) {
     int error = 360 - this->rotation;
     this->integral_error += error * 0.001;
     // update rotation integral, factor of 0.057296 is conversion from rad/s to deg/ms
-    this->rotation += input.gyro.gyro.z * dt * 0.057296f; 
+    this->rotation += (input.gyro.gyro.z-this->w_z_bias) * dt * 0.057296f; 
 
     // get pwm value to write, proportional control with bias where 0.355f corresponds to 128/360
-    float pwm = error*0.355f + this->integral_error * 0.355f;
+    float pwm = error*0.355f + this->integral_error * 0.355f; 
 
     // if pwm is positive then need to rotate left, if pwm is negative then need to rotate right
-    output.left_motor.set_pwm(-pwm);
-    output.right_motor.set_pwm(pwm);
+    output.left_motor.set_pwm(-110);
+    output.right_motor.set_pwm(110);
 
     this->prev_timestamp = input.gyro.timestamp;
 
-    snprintf(output.send_packet.state_log, STATE_LOG_LEN, "Rotation: %f (deg), Integral Error: %f (deg) dt: %d (ms)",
-            this->rotation, this->integral_error, dt);
+    snprintf(output.send_packet.state_log, STATE_LOG_LEN, "Rotation: %f (deg)\n",
+            (360-(this->rotation)));
 }
